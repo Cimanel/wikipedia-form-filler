@@ -1,8 +1,8 @@
 import {
   Admin,
-  Resource,
-  ListGuesser,
   EditGuesser,
+  ListGuesser,
+  Resource,
   ShowGuesser,
 } from "react-admin";
 import { dataProvider } from "./dataProvider";
@@ -10,13 +10,7 @@ import { dataProvider } from "./dataProvider";
 export const App = () => (
   <Admin dataProvider={dataProvider}>
     <Resource
-      name="posts"
-      list={ListGuesser}
-      edit={EditGuesser}
-      show={ShowGuesser}
-    />
-    <Resource
-      name="comments"
+      name="series"
       list={ListGuesser}
       edit={EditGuesser}
       show={ShowGuesser}
