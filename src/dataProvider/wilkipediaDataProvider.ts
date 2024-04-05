@@ -80,9 +80,12 @@ export const wilkipediaDataProvider = {
 
     // Wait for the JSONP response and return the extracted data
     const json = await jsonpPromise;
-    console.log(json);
     const extract = json.query.pages[Object.keys(json.query.pages)[0]].extract;
-    console.log("extract", extract);
-    return { data: extract };
+    const contentWithoutExtraChars = extract
+      .replace(/===/g, "=")
+      .replace(/==/g, "=")
+      .replace(/\n/g, " ")
+      .replace(/\t/g, "");
+    return { data: contentWithoutExtraChars };
   },
 };

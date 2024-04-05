@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import {
-  ArrayInput,
   Create,
-  DateInput,
   NumberInput,
   SimpleForm,
-  SimpleFormIterator,
   TextInput,
+  useDataProvider,
 } from "react-admin";
 import { useFormContext } from "react-hook-form";
 import { WilkipediaDialog } from "./components/WilkipediaDialog";
@@ -22,33 +20,39 @@ export const SeriesCreate = () => {
 };
 
 const SeriesForm = () => {
+  const dataProvider = useDataProvider();
   const [wilkipediaContent, setWilkipediaContent] = useState<any>(null);
   const { setValue, getValues } = useFormContext();
+  const [data, setData] = useState<any>(null);
 
   useEffect(() => {
     if (wilkipediaContent) {
-      const keys = Object.keys(getValues());
-      console.log("keys", keys);
-      const values = getOpenAIValuesFromContent(wilkipediaContent, keys);
+      const fetchData = async () => {
+        const keys = Object.keys(getValues());
+        const { data } = await dataProvider.getOpenAIValuesFromContent(
+          wilkipediaContent,
+          keys
+        );
+        setData(data);
+        for (const key in data) {
+          setValue(key, data[key]);
+        }
+      };
+      fetchData();
     }
   }, [wilkipediaContent]);
+  console.log("ee", data);
 
   return (
     <>
       <TextInput source="title" />
       <WilkipediaDialog setWilkipediaContent={setWilkipediaContent} />
-      <TextInput source="description" />
+      <TextInput source="synopsis" />
       <TextInput source="type" />
       <TextInput source="genre" />
       <TextInput source="creator" />
       <TextInput source="director" />
-      <ArrayInput source="seasons">
-        <SimpleFormIterator>
-          <NumberInput source="season" />
-          <NumberInput source="episodes" />
-          <DateInput source="release" />
-        </SimpleFormIterator>
-      </ArrayInput>
+      <NumberInput source="nbSeasons" />
     </>
   );
 };

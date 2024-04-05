@@ -2,9 +2,9 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import * as React from "react";
 import { useState } from "react";
 import { Button as RAButton, useDataProvider } from "react-admin";
@@ -32,15 +32,13 @@ export const WilkipediaDialog = ({ setWilkipediaContent }) => {
   };
 
   const handleTitleClick = async (url) => {
-    console.log("url", url);
     const realTitle = url.split("/").pop();
-    console.log(realTitle);
     if (title) {
       const { data } = await dataProvider.getWilkipediaContent({
         title: realTitle,
       });
       if (data) {
-        setWilkipediaContent([...data]);
+        setWilkipediaContent(data);
       }
     }
     setOpen(false);
@@ -55,28 +53,28 @@ export const WilkipediaDialog = ({ setWilkipediaContent }) => {
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+        aria-describedby="alert-dialog-synopsis"
       >
         <DialogTitle id="alert-dialog-title">
           {"Select a source to fill the form:"}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {wilkipediaList?.length === 0 && <p>No results found</p>}
-            {wilkipediaList?.length > 0 && (
-              <Stack>
-                {wilkipediaList.map(({ title, url }) => {
-                  return (
-                    <RAButton
-                      key={title}
-                      label={title}
-                      onClick={() => handleTitleClick(url)}
-                    />
-                  );
-                })}
-              </Stack>
-            )}
-          </DialogContentText>
+          {wilkipediaList?.length === 0 && (
+            <Typography>No results found</Typography>
+          )}
+          {wilkipediaList?.length > 0 && (
+            <Stack>
+              {wilkipediaList.map(({ title, url }) => {
+                return (
+                  <RAButton
+                    key={title}
+                    label={title}
+                    onClick={() => handleTitleClick(url)}
+                  />
+                );
+              })}
+            </Stack>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>

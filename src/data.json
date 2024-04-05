@@ -3,23 +3,12 @@
     {
       "id": "0",
       "title": "A Very Secret Service",
-      "description": "At the height of the Cold War in 1960, André Merlaux joins the French Secret Service and contends with enemies both foreign and bureaucratic.",
+      "synopsis": "At the height of the Cold War in 1960, André Merlaux joins the French Secret Service and contends with enemies both foreign and bureaucratic.",
       "type": "series",
       "genre": "Comedy",
       "creator": "Jean-François Halin",
       "director": "Alexandre Courtès",
-      "seasons": [
-        {
-          "season": 1,
-          "episodes": 12,
-          "release": "2015"
-        },
-        {
-          "season": 2,
-          "episodes": 12,
-          "release": "2018"
-        }
-      ]
+      "nbSeasons": 2
     }
   ]
 }
