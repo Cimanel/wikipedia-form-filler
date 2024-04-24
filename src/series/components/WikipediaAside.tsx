@@ -9,6 +9,7 @@ import {
   SEARCH_STATUS,
   useWikipediaContext,
 } from "./WikipediaContext";
+import { WikipediaLoading } from "./WikipediaLoading";
 import { WikipediaSearch } from "./WikipediaSearch";
 
 export const WikipediaAside = () => {
@@ -36,7 +37,7 @@ export const WikipediaAside = () => {
   return (
     <>
       {status === SEARCH_STATUS && <WikipediaSearch />}
-      {status === LOADING_STATUS && <Typography>Loading...</Typography>}
+      {status === LOADING_STATUS && <WikipediaLoading />}
       {status === LIST_STATUS && (
         <Box
           aria-labelledby="alert-wikipedia-title"
