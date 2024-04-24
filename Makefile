@@ -9,5 +9,8 @@ install: ## Install dependencies
 start: ## Start the application
 	yarn dev
 
+build: ## Build the application for production
+	yarn build
+
 lint: ## Lint the code
 	yarn lint

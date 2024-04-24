@@ -5,7 +5,7 @@
 Install the application dependencies by running:
 
 ```sh
-yarn
+make install
 ```
 
 ## Development
@@ -13,7 +13,7 @@ yarn
 Start the application in development mode by running:
 
 ```sh
-yarn dev
+make start
 ```
 
 ## Production
@@ -21,7 +21,7 @@ yarn dev
 Build the application in production mode by running:
 
 ```sh
-yarn build
+make build
 ```
 
 ## DataProvider
