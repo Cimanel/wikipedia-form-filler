@@ -4,7 +4,7 @@ import { fetchUtils } from "react-admin";
 const DEFAULT_PARAMS = {
   model: "gpt-3.5-turbo-0125",
   temperature: 0.5,
-  max_tokens: 256,
+  max_tokens: 512,
   top_p: 1,
   frequency_penalty: 0,
   presence_penalty: 0,
@@ -60,7 +60,14 @@ const fetchOpenAI = async (message: string) => {
   );
   const { json } = await fetchUtils.fetchJson(OPEN_AI_ENDPOINT, requestOptions);
 
-  return JSON.parse(json.choices[0]?.message?.content);
+  let parsedJSON = { title: "Content not readable" };
+  try {
+    parsedJSON = JSON.parse(json.choices[0]?.message?.content);
+  } catch (error) {
+    console.log("error", error);
+  }
+
+  return parsedJSON;
 };
 
 const tokenizeContent = (content: string, messageWithoutContent: string) => {
