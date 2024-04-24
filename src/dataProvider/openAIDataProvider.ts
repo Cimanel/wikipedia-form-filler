@@ -2,7 +2,7 @@ import merge from "lodash/merge";
 import { fetchUtils } from "react-admin";
 
 const DEFAULT_PARAMS = {
-  model: "gpt-3.5-turbo",
+  model: "gpt-3.5-turbo-0125",
   temperature: 0.5,
   max_tokens: 256,
   top_p: 1,
@@ -10,7 +10,7 @@ const DEFAULT_PARAMS = {
   presence_penalty: 0,
 };
 
-const MESSAGE_MAX_TOKENS = 4000;
+const MESSAGE_MAX_TOKENS = 16385;
 
 const VITE_OPEN_AI_KEY = import.meta.env.VITE_OPEN_AI_KEY;
 
@@ -21,17 +21,16 @@ export const openAIDataProvider = {
     const messageWithoutContent = `fields ${keys.join(",")}.text:`;
     console.log("iiiiiiiiiiiiiiiiiii");
     const groups = tokenizeContent(content, messageWithoutContent);
-
-    const result = await groups.reduce(async (acc, group) => {
+    let result = {};
+    for (const group of groups) {
       //fetchopenai for each group
 
       const message = `${messageWithoutContent}${group}`;
       const data = await fetchOpenAI(message);
-      const toto = removeNullUndefined(data);
-      return { ...acc, ...toto };
-    }, {});
-    console.log("result", result);
-    // return { data: json.choices[0]?.message?.content };
+      const sanitizedData = removeNullUndefined(data);
+      console.log("sanitizedData", sanitizedData);
+      result = { ...sanitizedData, ...result };
+    }
     return { data: result };
   },
 };
@@ -90,7 +89,12 @@ const tokenizeContent = (content: string, messageWithoutContent: string) => {
 
 const removeNullUndefined = (obj) => {
   return Object.entries(obj).reduce((acc, [key, value]) => {
-    if (value !== null && value !== undefined) {
+    if (
+      value !== null &&
+      value !== undefined &&
+      value !== "null" &&
+      value !== "undefined"
+    ) {
       acc[key] = typeof value === "object" ? removeNullUndefined(value) : value;
     }
     return acc;

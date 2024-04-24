@@ -47,7 +47,7 @@ const SeriesForm = () => {
     <>
       <TextInput source="title" />
       <WilkipediaDialog setWilkipediaContent={setWilkipediaContent} />
-      <TextInput source="synopsis" />
+      <TextInput source="synopsis" multiline fullWidth />
       <TextInput source="type" />
       <TextInput source="genre" />
       <TextInput source="creator" />
