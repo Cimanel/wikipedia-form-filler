@@ -1,3 +1,4 @@
+import Box from "@mui/material/Box";
 import {
   CONTENT_STATUS,
   LIST_STATUS,
@@ -14,11 +15,11 @@ export const WikipediaAside = () => {
   const { status } = useWikipediaContext();
 
   return (
-    <>
+    <Box>
       {status === SEARCH_STATUS && <WikipediaSearch />}
       {status === LOADING_STATUS && <WikipediaLoading />}
       {status === LIST_STATUS && <WikipediaList />}
       {status === CONTENT_STATUS && <WikipediaContent />}
-    </>
+    </Box>
   );
 };
