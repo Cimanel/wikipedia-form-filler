@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Create,
   NumberInput,
@@ -7,23 +7,29 @@ import {
   useDataProvider,
 } from "react-admin";
 import { useFormContext } from "react-hook-form";
-import { WikipediaDialog } from "./components/WikipediaDialog";
+import { WikipediaInterractions } from "./components/WikipediaInterractions";
+import {
+  CONTENT_STATUS,
+  useWikipediaContext,
+  WikipediaContext,
+} from "./components/WikipediaContext";
 
 export const SeriesCreate = () => {
   return (
-    <Create>
-      <SimpleForm>
-        <SeriesForm />
-      </SimpleForm>
-    </Create>
+    <WikipediaContext>
+      <Create aside={<WikipediaInterractions />}>
+        <SimpleForm>
+          <SeriesForm />
+        </SimpleForm>
+      </Create>
+    </WikipediaContext>
   );
 };
 
 const SeriesForm = () => {
   const dataProvider = useDataProvider();
-  const [wikipediaContent, setWikipediaContent] = useState<any>(null);
+  const { wikipediaContent, setStatus, setTitle } = useWikipediaContext();
   const { setValue, getValues } = useFormContext();
-  const [data, setData] = useState<any>(null);
 
   useEffect(() => {
     if (wikipediaContent) {
@@ -33,20 +39,18 @@ const SeriesForm = () => {
           wikipediaContent,
           keys
         );
-        setData(data);
         for (const key in data) {
           setValue(key, data[key]);
         }
+        setStatus(CONTENT_STATUS);
       };
       fetchData();
     }
   }, [wikipediaContent]);
-  console.log("ee", data);
 
   return (
     <>
-      <TextInput source="title" />
-      <WikipediaDialog setWikipediaContent={setWikipediaContent} />
+      <TextInput source="title" onChange={(e) => setTitle(e.target.value)} />
       <TextInput source="synopsis" multiline fullWidth />
       <TextInput source="type" />
       <TextInput source="genre" />
