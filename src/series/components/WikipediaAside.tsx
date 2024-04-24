@@ -1,36 +1,20 @@
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { Button as RAButton, useDataProvider } from "react-admin";
 import {
   LIST_STATUS,
-  SEARCH_STATUS,
   LOADING_STATUS,
+  SEARCH_STATUS,
   useWikipediaContext,
 } from "./WikipediaContext";
+import { WikipediaSearch } from "./WikipediaSearch";
 
 export const WikipediaAside = () => {
-  const {
-    status,
-    setStatus,
-    title,
-    setWikipediaContent,
-    wikipediaList,
-    setWikipediaList,
-  } = useWikipediaContext();
+  const { status, setStatus, title, setWikipediaContent, wikipediaList } =
+    useWikipediaContext();
   const dataProvider = useDataProvider();
-
-  const handleClickSearchTitle = async () => {
-    setStatus(LOADING_STATUS);
-    if (title) {
-      const { data } = await dataProvider.getWikipediaList({ search: title });
-      if (data) {
-        setWikipediaList(data);
-      }
-    }
-    setStatus(LIST_STATUS);
-  };
 
   const handleCancel = () => {
     setStatus(SEARCH_STATUS);
@@ -51,11 +35,7 @@ export const WikipediaAside = () => {
 
   return (
     <>
-      {status === SEARCH_STATUS && (
-        <Button variant="outlined" onClick={handleClickSearchTitle}>
-          Search from Wikipedia
-        </Button>
-      )}
+      {status === SEARCH_STATUS && <WikipediaSearch />}
       {status === LOADING_STATUS && <Typography>Loading...</Typography>}
       {status === LIST_STATUS && (
         <Box
