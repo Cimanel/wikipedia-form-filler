@@ -9,8 +9,10 @@ import {
 import { useFormContext } from "react-hook-form";
 import {
   CONTENT_STATUS,
-  WikipediaContext,
+  DISCARD_STATUS,
+  LIST_STATUS,
   useWikipediaContext,
+  WikipediaContext,
 } from "./components/WikipediaContext";
 import { WikipediaAside } from "./components/WikipediaAside";
 
@@ -28,17 +30,27 @@ export const SeriesCreate = () => {
 
 const SeriesForm = () => {
   const dataProvider = useDataProvider();
-  const { wikipediaContent, setStatus, setTitle } = useWikipediaContext();
+  const {
+    backup,
+    wikipediaContent,
+    setWikipediaContent,
+    setBackup,
+    setStatus,
+    setTitle,
+    status,
+  } = useWikipediaContext();
   const { setValue, getValues } = useFormContext();
 
   useEffect(() => {
     if (wikipediaContent) {
       const fetchData = async () => {
-        const keys = Object.keys(getValues());
+        const formValues = getValues();
+        const keys = Object.keys(formValues);
         const { data } = await dataProvider.getOpenAIValuesFromContent(
           wikipediaContent,
           keys
         );
+        setBackup(formValues);
         for (const key in data) {
           setValue(key, data[key]);
         }
@@ -47,6 +59,21 @@ const SeriesForm = () => {
       fetchData();
     }
   }, [wikipediaContent]);
+
+  useEffect(() => {
+    if (status === DISCARD_STATUS) {
+      const resetData = async () => {
+        const keys = Object.keys(backup);
+        for (const key of keys) {
+          setValue(key, backup[key]);
+        }
+        setBackup({});
+        setWikipediaContent("");
+        setStatus(LIST_STATUS);
+      };
+      resetData();
+    }
+  }, [status]);
 
   return (
     <>

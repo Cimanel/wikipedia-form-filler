@@ -11,6 +11,7 @@ export const SEARCH_STATUS = "search";
 export const LIST_STATUS = "list";
 export const LOADING_STATUS = "loading";
 export const CONTENT_STATUS = "content";
+export const DISCARD_STATUS = "discard";
 
 export const WikipediaContext = ({ children }: WikipediaContextProps) => {
   const [wikipediaList, setWikipediaList] = useState<
@@ -19,6 +20,7 @@ export const WikipediaContext = ({ children }: WikipediaContextProps) => {
   const [wikipediaContent, setWikipediaContent] = useState<string>("");
   const [status, setStatus] = useState<string>("search");
   const [title, setTitle] = useState<string>("");
+  const [backup, setBackup] = useState<Record<string, string | undefined>>({});
 
   return (
     <Wikipedia.Provider
@@ -31,6 +33,8 @@ export const WikipediaContext = ({ children }: WikipediaContextProps) => {
         setStatus,
         title,
         setTitle,
+        backup,
+        setBackup,
       }}
     >
       {children}
@@ -63,6 +67,8 @@ type WikipediaData = {
   setStatus: Dispatch<SetStateAction<string>>;
   title: string;
   setTitle: Dispatch<SetStateAction<string>>;
+  backup: Record<string, string | undefined>;
+  setBackup: Dispatch<SetStateAction<Record<string, string | undefined>>>;
 };
 
 const Wikipedia = createContext<WikipediaData | null>(null);
