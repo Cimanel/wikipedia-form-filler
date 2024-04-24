@@ -1,5 +1,5 @@
 {
-  "name": "wilkipedia-form-filler",
+  "name": "wikipedia-form-filler",
   "private": true,
   "scripts": {
     "dev": "vite",

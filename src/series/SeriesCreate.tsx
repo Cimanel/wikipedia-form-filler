@@ -7,7 +7,7 @@ import {
   useDataProvider,
 } from "react-admin";
 import { useFormContext } from "react-hook-form";
-import { WilkipediaDialog } from "./components/WilkipediaDialog";
+import { WikipediaDialog } from "./components/WikipediaDialog";
 
 export const SeriesCreate = () => {
   return (
@@ -21,16 +21,16 @@ export const SeriesCreate = () => {
 
 const SeriesForm = () => {
   const dataProvider = useDataProvider();
-  const [wilkipediaContent, setWilkipediaContent] = useState<any>(null);
+  const [wikipediaContent, setWikipediaContent] = useState<any>(null);
   const { setValue, getValues } = useFormContext();
   const [data, setData] = useState<any>(null);
 
   useEffect(() => {
-    if (wilkipediaContent) {
+    if (wikipediaContent) {
       const fetchData = async () => {
         const keys = Object.keys(getValues());
         const { data } = await dataProvider.getOpenAIValuesFromContent(
-          wilkipediaContent,
+          wikipediaContent,
           keys
         );
         setData(data);
@@ -40,13 +40,13 @@ const SeriesForm = () => {
       };
       fetchData();
     }
-  }, [wilkipediaContent]);
+  }, [wikipediaContent]);
   console.log("ee", data);
 
   return (
     <>
       <TextInput source="title" />
-      <WilkipediaDialog setWilkipediaContent={setWilkipediaContent} />
+      <WikipediaDialog setWikipediaContent={setWikipediaContent} />
       <TextInput source="synopsis" multiline fullWidth />
       <TextInput source="type" />
       <TextInput source="genre" />

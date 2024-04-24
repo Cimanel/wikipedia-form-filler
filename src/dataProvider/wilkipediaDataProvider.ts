@@ -1,7 +1,7 @@
 import { fetchUtils } from "react-admin";
 
-export const wilkipediaDataProvider = {
-  getWilkipediaList: async (parameters = { search: "" }) => {
+export const wikipediaDataProvider = {
+  getWikipediaList: async (parameters = { search: "" }) => {
     const queryParams = new URLSearchParams({
       action: "opensearch",
       limit: "10",
@@ -26,7 +26,7 @@ export const wilkipediaDataProvider = {
     console.log("data", data);
     return { data };
   },
-  getWilkipediaContent: async (parameters = { title: "" }) => {
+  getWikipediaContent: async (parameters = { title: "" }) => {
     const { title } = parameters;
     const requestOptions = {
       method: "GET",

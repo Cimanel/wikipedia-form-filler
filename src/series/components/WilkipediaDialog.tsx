@@ -10,18 +10,18 @@ import { useState } from "react";
 import { Button as RAButton, useDataProvider } from "react-admin";
 import { useWatch } from "react-hook-form";
 
-export const WilkipediaDialog = ({ setWilkipediaContent }) => {
+export const WikipediaDialog = ({ setWikipediaContent }) => {
   const [open, setOpen] = React.useState(false);
   const title = useWatch({ name: "title" });
   const dataProvider = useDataProvider();
 
-  const [wilkipediaList, setWilkipediaList] = useState<any>(null);
+  const [wikipediaList, setWikipediaList] = useState<any>(null);
 
   const handleClickOpen = async () => {
     if (title) {
-      const { data } = await dataProvider.getWilkipediaList({ search: title });
+      const { data } = await dataProvider.getWikipediaList({ search: title });
       if (data) {
-        setWilkipediaList(data);
+        setWikipediaList(data);
       }
     }
     setOpen(true);
@@ -34,11 +34,11 @@ export const WilkipediaDialog = ({ setWilkipediaContent }) => {
   const handleTitleClick = async (url) => {
     const realTitle = url.split("/").pop();
     if (title) {
-      const { data } = await dataProvider.getWilkipediaContent({
+      const { data } = await dataProvider.getWikipediaContent({
         title: realTitle,
       });
       if (data) {
-        setWilkipediaContent(data);
+        setWikipediaContent(data);
       }
     }
     setOpen(false);
@@ -47,7 +47,7 @@ export const WilkipediaDialog = ({ setWilkipediaContent }) => {
   return (
     <React.Fragment>
       <Button variant="outlined" onClick={handleClickOpen}>
-        Search from Wilkipedia
+        Search from Wikipedia
       </Button>
       <Dialog
         open={open}
@@ -59,12 +59,12 @@ export const WilkipediaDialog = ({ setWilkipediaContent }) => {
           {"Select a source to fill the form:"}
         </DialogTitle>
         <DialogContent>
-          {wilkipediaList?.length === 0 && (
+          {wikipediaList?.length === 0 && (
             <Typography>No results found</Typography>
           )}
-          {wilkipediaList?.length > 0 && (
+          {wikipediaList?.length > 0 && (
             <Stack>
-              {wilkipediaList.map(({ title, url }) => {
+              {wikipediaList.map(({ title, url }) => {
                 return (
                   <RAButton
                     key={title}

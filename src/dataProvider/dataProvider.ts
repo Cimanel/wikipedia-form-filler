@@ -1,10 +1,10 @@
 import fakeRestDataProvider from "ra-data-fakerest";
 import data from "../data.json";
-import { wilkipediaDataProvider } from "./wilkipediaDataProvider";
+import { wikipediaDataProvider } from "./wikipediaDataProvider";
 import { openAIDataProvider } from "./openAIDataProvider";
 
 export const dataProvider = {
   ...fakeRestDataProvider(data, true),
-  ...wilkipediaDataProvider,
+  ...wikipediaDataProvider,
   ...openAIDataProvider,
 };
