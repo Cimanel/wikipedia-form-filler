@@ -20,13 +20,11 @@ export const WikipediaContent = () => {
   };
 
   return (
-    <>
-      <Box>
-        <Button onClick={handleAccept}>Accept</Button>
-      </Box>
-      <Box>
-        <Button onClick={handleDiscard}>Discard</Button>
-      </Box>
-    </>
+    <Box display="flex" justifyContent="space-around">
+      <Button onClick={handleAccept}>Accept</Button>
+      <Button sx={{ color: "red" }} onClick={handleDiscard}>
+        Discard
+      </Button>
+    </Box>
   );
 };

@@ -86,11 +86,13 @@ export const WikipediaList = () => {
           </>
         )}
       </Box>
-      <Box>
+      <Box display="flex" justifyContent="center">
         <Button onClick={() => handleTitleClick(value)} disabled={value === ""}>
           Prefill with selected article
         </Button>
-        <Button onClick={handleCancel}>Cancel</Button>
+        <Button sx={{ color: "red" }} onClick={handleCancel}>
+          Cancel
+        </Button>
       </Box>
     </Box>
   );
