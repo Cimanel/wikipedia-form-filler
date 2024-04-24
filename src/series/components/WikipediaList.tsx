@@ -16,7 +16,7 @@ import {
 } from "./WikipediaContext";
 
 export const WikipediaList = () => {
-  const { setStatus, title, setWikipediaContent, wikipediaList } =
+  const { setStatus, title, setWikipediaContent, wikipediaList, setWikiTitle } =
     useWikipediaContext();
   const dataProvider = useDataProvider();
   const [value, setValue] = useState("");
@@ -38,6 +38,7 @@ export const WikipediaList = () => {
   const handleTitleClick = async (url: string) => {
     setStatus(LOADING_STATUS);
     const realTitle = url.split("/").pop();
+    setWikiTitle(getTitleFromUrl(url, wikipediaList));
 
     if (title) {
       const { data } = await dataProvider.getWikipediaContent({
@@ -96,4 +97,12 @@ export const WikipediaList = () => {
       </Box>
     </Box>
   );
+};
+
+const getTitleFromUrl = (
+  url: string,
+  wikipediaList: Array<{ title: string; url: string }>
+) => {
+  const wiki = wikipediaList.find((wiki) => wiki.url === url);
+  return wiki?.title || null;
 };

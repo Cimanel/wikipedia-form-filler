@@ -4,6 +4,7 @@ import CardContent from "@mui/material/CardContent";
 import CardHeader from "@mui/material/CardHeader";
 
 import logo from "../../assets/wiki-ai-white.png";
+import { WikipediaContent } from "./WikipediaContent";
 import {
   CONTENT_STATUS,
   LIST_STATUS,
@@ -11,7 +12,6 @@ import {
   SEARCH_STATUS,
   useWikipediaContext,
 } from "./WikipediaContext";
-import { WikipediaContent } from "./WikipediaContent";
 import { WikipediaList } from "./WikipediaList";
 import { WikipediaLoading } from "./WikipediaLoading";
 import { WikipediaSearch } from "./WikipediaSearch";

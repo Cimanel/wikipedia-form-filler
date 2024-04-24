@@ -1,10 +1,10 @@
 import {
-  type Dispatch,
-  type ReactNode,
-  type SetStateAction,
   createContext,
   useContext,
   useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
 } from "react";
 
 export const SEARCH_STATUS = "search";
@@ -21,6 +21,7 @@ export const WikipediaContext = ({ children }: WikipediaContextProps) => {
   const [status, setStatus] = useState<string>("search");
   const [title, setTitle] = useState<string>("");
   const [backup, setBackup] = useState<Record<string, string | undefined>>({});
+  const [wikiTitle, setWikiTitle] = useState<string | null>(null);
 
   return (
     <Wikipedia.Provider
@@ -35,6 +36,8 @@ export const WikipediaContext = ({ children }: WikipediaContextProps) => {
         setTitle,
         backup,
         setBackup,
+        wikiTitle,
+        setWikiTitle,
       }}
     >
       {children}
@@ -69,6 +72,8 @@ type WikipediaData = {
   setTitle: Dispatch<SetStateAction<string>>;
   backup: Record<string, string | undefined>;
   setBackup: Dispatch<SetStateAction<Record<string, string | undefined>>>;
+  wikiTitle: string | null;
+  setWikiTitle: Dispatch<SetStateAction<string | null>>;
 };
 
 const Wikipedia = createContext<WikipediaData | null>(null);
