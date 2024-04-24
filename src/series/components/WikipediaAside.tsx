@@ -10,7 +10,7 @@ import {
   useWikipediaContext,
 } from "./WikipediaContext";
 
-export const WikipediaInterractions = () => {
+export const WikipediaAside = () => {
   const {
     status,
     setStatus,

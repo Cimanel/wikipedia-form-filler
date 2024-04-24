@@ -7,17 +7,17 @@ import {
   useDataProvider,
 } from "react-admin";
 import { useFormContext } from "react-hook-form";
-import { WikipediaInterractions } from "./components/WikipediaInterractions";
 import {
   CONTENT_STATUS,
-  useWikipediaContext,
   WikipediaContext,
+  useWikipediaContext,
 } from "./components/WikipediaContext";
+import { WikipediaAside } from "./components/WikipediaAside";
 
 export const SeriesCreate = () => {
   return (
     <WikipediaContext>
-      <Create aside={<WikipediaInterractions />}>
+      <Create aside={<WikipediaAside />}>
         <SimpleForm>
           <SeriesForm />
         </SimpleForm>
