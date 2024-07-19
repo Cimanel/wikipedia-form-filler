@@ -31,7 +31,7 @@ export const SeriesCreate = () => {
   return (
     <WikipediaContext>
       <Create aside={<WikipediaAside />}>
-        <SimpleForm sx={{ height: "600px" }}>
+        <SimpleForm sx={{ maxHeight: "85vh", overflowY: "scroll" }}>
           <SeriesForm />
         </SimpleForm>
       </Create>
@@ -140,27 +140,25 @@ const InputWithWikipediaIcon = ({
   };
 
   return (
-    <Grid container spacing={1}>
+    <Grid container spacing={1} xs={12}>
       <Grid item xs={5}>
         {children}
       </Grid>
       <Grid item xs={1}>
         <IconButton
           aria-label="Suggestions from Wikipedia"
-          sx={{
-            mt: 1,
-          }}
+          sx={{ padding: 0 }}
           // disabled={disabled}
-          onClick={() => setIsSuggestionsOpen(true)}
+          onClick={() => setIsSuggestionsOpen(!isSuggestionsOpen)}
         >
           <Box
             component="img"
             sx={{
-              width: 30,
-              height: 30,
+              width: 40,
+              height: 40,
               backgroundColor: disabled ? "grey" : "secondary.main",
               borderRadius: "4px",
-              padding: "2px",
+              padding: "4px",
             }}
             src={logo}
           />
@@ -170,7 +168,7 @@ const InputWithWikipediaIcon = ({
         <Grid item xs={6}>
           <FormControl>
             <FormLabel id="demo-radio-buttons-group-label">
-              {uppercaseSourceName}
+              OTHER SUGGESTIONS
             </FormLabel>
             <RadioGroup
               aria-labelledby="demo-radio-buttons-group-label"
@@ -181,6 +179,7 @@ const InputWithWikipediaIcon = ({
             >
               {openAiValues[sourceName]?.map((value) => (
                 <FormControlLabel
+                  sx={{ maxWidth: 500 }}
                   key={value}
                   value={value}
                   control={<Radio />}
