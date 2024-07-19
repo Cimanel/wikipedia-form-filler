@@ -7,20 +7,20 @@ import {
   useDataProvider,
 } from "react-admin";
 import { useFormContext } from "react-hook-form";
+import { WikipediaAside } from "./components/WikipediaAside";
 import {
   CONTENT_STATUS,
   DISCARD_STATUS,
   LIST_STATUS,
-  useWikipediaContext,
   WikipediaContext,
+  useWikipediaContext,
 } from "./components/WikipediaContext";
-import { WikipediaAside } from "./components/WikipediaAside";
 
 export const SeriesCreate = () => {
   return (
     <WikipediaContext>
       <Create aside={<WikipediaAside />}>
-        <SimpleForm>
+        <SimpleForm sx={{ height: "600px" }}>
           <SeriesForm />
         </SimpleForm>
       </Create>
