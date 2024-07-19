@@ -4,7 +4,7 @@ import { fetchUtils } from "react-admin";
 const DEFAULT_PARAMS = {
   model: "gpt-3.5-turbo-0125",
   temperature: 0.5,
-  max_tokens: 1000,
+  max_tokens: 3000,
   top_p: 1,
   frequency_penalty: 0,
   presence_penalty: 0,
@@ -21,7 +21,7 @@ export const openAIDataProvider = {
     const messageWithoutContent = `fields ${keys.join(",")}.text:`;
     console.log("iiiiiiiiiiiiiiiiiii");
     const groups = tokenizeContent(content, messageWithoutContent);
-    let result = {};
+    let result: Record<string, (string | object)[]> = {};
     for (const group of groups) {
       //fetchopenai for each group
 
@@ -30,11 +30,15 @@ export const openAIDataProvider = {
       const sanitizedData = removeNullUndefined(data);
       console.log("sanitizedData", sanitizedData);
       for (const key of Object.keys(sanitizedData)) {
-        result[key] = result[key]
-          ? [...result[key], sanitizedData[key]]
-          : [sanitizedData[key]];
+        if (!result[key]) {
+          result[key] = [sanitizedData[key]];
+        } else {
+          result[key] = Array.from(
+            new Set([...result[key], sanitizedData[key]])
+          );
+        }
       }
-      // TODO remove same values , TODO only select first value of array, TODO prioritize values
+      // TODO only select first value of array, TODO prioritize values
       // result = { ...sanitizedData, ...result };
     }
     console.log("result", result);
@@ -85,7 +89,7 @@ const tokenizeContent = (content: string, messageWithoutContent: string) => {
   const max_words =
     (MESSAGE_MAX_TOKENS / 100) * 75 - messageWithoutContentWords.length;
 
-  const groups = words.reduce(
+  const groups = words.reduce<string[][]>(
     (acc, word) => {
       if (acc[acc.length - 1].length + word.length < max_words) {
         acc[acc.length - 1].push(word);
@@ -101,16 +105,22 @@ const tokenizeContent = (content: string, messageWithoutContent: string) => {
   return agregatedGroups;
 };
 
-const removeNullUndefined = (obj) => {
-  return Object.entries(obj).reduce((acc, [key, value]) => {
-    if (
-      value !== null &&
-      value !== undefined &&
-      value !== "null" &&
-      value !== "undefined"
-    ) {
-      acc[key] = typeof value === "object" ? removeNullUndefined(value) : value;
-    }
-    return acc;
-  }, {});
+const removeNullUndefined = (obj: Record<string, string | object>) => {
+  return Object.entries(obj).reduce<Record<string, string | object>>(
+    (acc, [key, value]) => {
+      if (
+        value !== null &&
+        value !== undefined &&
+        value !== "null" &&
+        value !== "undefined"
+      ) {
+        acc[key] =
+          typeof value === "object"
+            ? removeNullUndefined(value as Record<string, string | object>)
+            : value;
+      }
+      return acc;
+    },
+    {}
+  );
 };

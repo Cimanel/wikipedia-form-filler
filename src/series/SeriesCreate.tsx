@@ -42,7 +42,7 @@ export const SeriesCreate = () => {
 const SeriesForm = () => {
   const dataProvider = useDataProvider();
   const [disabledWikipediaIcon, setDisabledWikipediaIcon] = useState(true);
-  const [openAiValues, setOpenAiValues] = useState({
+  const [openAiValues, setOpenAiValues] = useState<Record<string, string[]>>({
     title: ["totoA", "totoB", "totoC"],
     synopsis: ["synopsisA", "synopsisB", "synopsisC"],
   });
@@ -121,9 +121,13 @@ const SeriesForm = () => {
   );
 };
 
-const InputWithWikipediaIcon = ({ children, disabled, openAiValues }) => {
+const InputWithWikipediaIcon = ({
+  children,
+  disabled,
+  openAiValues,
+}: InputWithWikipediaIconProps) => {
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
-  const sourceName = children.props.source;
+  const sourceName: string = children.props.source;
   const uppercaseSourceName = sourceName[0].toUpperCase() + sourceName.slice(1);
 
   const { setValue } = useFormContext();
@@ -189,4 +193,10 @@ const InputWithWikipediaIcon = ({ children, disabled, openAiValues }) => {
       )}
     </Grid>
   );
+};
+
+type InputWithWikipediaIconProps = {
+  children: JSX.Element;
+  disabled: boolean;
+  openAiValues: Record<string, string[]>;
 };
