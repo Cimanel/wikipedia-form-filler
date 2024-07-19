@@ -4,13 +4,13 @@ import { fetchUtils } from "react-admin";
 const DEFAULT_PARAMS = {
   model: "gpt-3.5-turbo-0125",
   temperature: 0.5,
-  max_tokens: 512,
+  max_tokens: 1000,
   top_p: 1,
   frequency_penalty: 0,
   presence_penalty: 0,
 };
 
-const MESSAGE_MAX_TOKENS = 16385;
+const MESSAGE_MAX_TOKENS = 2000;
 
 const VITE_OPEN_AI_KEY = import.meta.env.VITE_OPEN_AI_KEY;
 
@@ -29,8 +29,15 @@ export const openAIDataProvider = {
       const data = await fetchOpenAI(message);
       const sanitizedData = removeNullUndefined(data);
       console.log("sanitizedData", sanitizedData);
-      result = { ...sanitizedData, ...result };
+      for (const key of Object.keys(sanitizedData)) {
+        result[key] = result[key]
+          ? [...result[key], sanitizedData[key]]
+          : [sanitizedData[key]];
+      }
+      // TODO remove same values , TODO only select first value of array, TODO prioritize values
+      // result = { ...sanitizedData, ...result };
     }
+    console.log("result", result);
     return { data: result };
   },
 };

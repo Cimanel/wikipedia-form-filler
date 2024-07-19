@@ -1,4 +1,14 @@
-import { useEffect } from "react";
+import {
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+} from "@mui/material";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import { useEffect, useState } from "react";
 import {
   Create,
   NumberInput,
@@ -6,7 +16,8 @@ import {
   TextInput,
   useDataProvider,
 } from "react-admin";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
+import logo from "../assets/wiki-ai-white.png";
 import { WikipediaAside } from "./components/WikipediaAside";
 import {
   CONTENT_STATUS,
@@ -30,6 +41,12 @@ export const SeriesCreate = () => {
 
 const SeriesForm = () => {
   const dataProvider = useDataProvider();
+  const [disabledWikipediaIcon, setDisabledWikipediaIcon] = useState(true);
+  const [openAiValues, setOpenAiValues] = useState({
+    title: ["totoA", "totoB", "totoC"],
+    synopsis: ["synopsisA", "synopsisB", "synopsisC"],
+  });
+
   const {
     backup,
     wikipediaContent,
@@ -50,10 +67,12 @@ const SeriesForm = () => {
           wikipediaContent,
           keys
         );
+        setOpenAiValues(data);
         setBackup(formValues);
         for (const key in data) {
           setValue(key, data[key]);
         }
+        setDisabledWikipediaIcon(false);
         setStatus(CONTENT_STATUS);
       };
       fetchData();
@@ -77,13 +96,97 @@ const SeriesForm = () => {
 
   return (
     <>
-      <TextInput source="title" onChange={(e) => setTitle(e.target.value)} />
-      <TextInput source="synopsis" multiline fullWidth />
+      <InputWithWikipediaIcon
+        disabled={disabledWikipediaIcon}
+        openAiValues={openAiValues}
+      >
+        <TextInput
+          source="title"
+          onChange={(e) => setTitle(e.target.value)}
+          fullWidth
+        />
+      </InputWithWikipediaIcon>
+      <InputWithWikipediaIcon
+        disabled={disabledWikipediaIcon}
+        openAiValues={openAiValues}
+      >
+        <TextInput source="synopsis" multiline fullWidth rows={12} />
+      </InputWithWikipediaIcon>
       <TextInput source="type" />
       <TextInput source="genre" />
       <TextInput source="creator" />
       <TextInput source="director" />
       <NumberInput source="nbSeasons" />
     </>
+  );
+};
+
+const InputWithWikipediaIcon = ({ children, disabled, openAiValues }) => {
+  const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
+  const sourceName = children.props.source;
+  const uppercaseSourceName = sourceName[0].toUpperCase() + sourceName.slice(1);
+
+  const { setValue } = useFormContext();
+  const value = useWatch({ name: sourceName });
+  console.log("value", value);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(sourceName, (event.target as HTMLInputElement).value);
+    setIsSuggestionsOpen(false);
+  };
+
+  return (
+    <Grid container spacing={1}>
+      <Grid item xs={5}>
+        {children}
+      </Grid>
+      <Grid item xs={1}>
+        <IconButton
+          aria-label="Suggestions from Wikipedia"
+          sx={{
+            mt: 1,
+          }}
+          // disabled={disabled}
+          onClick={() => setIsSuggestionsOpen(true)}
+        >
+          <Box
+            component="img"
+            sx={{
+              width: 30,
+              height: 30,
+              backgroundColor: disabled ? "grey" : "secondary.main",
+              borderRadius: "4px",
+              padding: "2px",
+            }}
+            src={logo}
+          />
+        </IconButton>
+      </Grid>
+      {isSuggestionsOpen && (
+        <Grid item xs={6}>
+          <FormControl>
+            <FormLabel id="demo-radio-buttons-group-label">
+              {uppercaseSourceName}
+            </FormLabel>
+            <RadioGroup
+              aria-labelledby="demo-radio-buttons-group-label"
+              defaultValue="female"
+              name="radio-buttons-group"
+              value={value}
+              onChange={handleChange}
+            >
+              {openAiValues[sourceName]?.map((value) => (
+                <FormControlLabel
+                  key={value}
+                  value={value}
+                  control={<Radio />}
+                  label={value}
+                />
+              ))}
+            </RadioGroup>
+          </FormControl>
+        </Grid>
+      )}
+    </Grid>
   );
 };
