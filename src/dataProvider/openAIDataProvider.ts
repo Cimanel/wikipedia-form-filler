@@ -4,13 +4,13 @@ import { fetchUtils } from "react-admin";
 const DEFAULT_PARAMS = {
   model: "gpt-3.5-turbo-0125",
   temperature: 0.5,
-  max_tokens: 3000,
+  max_tokens: 3000, // max = 4096
   top_p: 1,
   frequency_penalty: 0,
   presence_penalty: 0,
 };
 
-const MESSAGE_MAX_TOKENS = 2000;
+const MESSAGE_MAX_TOKENS = 16000 - DEFAULT_PARAMS.max_tokens; //max = 16385
 
 const VITE_OPEN_AI_KEY = import.meta.env.VITE_OPEN_AI_KEY;
 
@@ -20,8 +20,9 @@ export const openAIDataProvider = {
   getOpenAIValuesFromContent: async (content: string, keys: [string]) => {
     const messageWithoutContent = `fields ${keys.join(",")}.text:`;
     console.log("iiiiiiiiiiiiiiiiiii");
+    console.log(content.length, "nb de caractères");
     const groups = tokenizeContent(content, messageWithoutContent);
-    let result: Record<string, (string | object)[]> = {};
+    let result: Record<string, string | object> = {};
     for (const group of groups) {
       //fetchopenai for each group
 
@@ -32,10 +33,6 @@ export const openAIDataProvider = {
       for (const key of Object.keys(sanitizedData)) {
         if (!result[key]) {
           result[key] = [sanitizedData[key]];
-        } else {
-          result[key] = Array.from(
-            new Set([...result[key], sanitizedData[key]])
-          );
         }
       }
       // TODO only select first value of array, TODO prioritize values
@@ -88,7 +85,8 @@ const tokenizeContent = (content: string, messageWithoutContent: string) => {
   //crete group of words respecting 4000 tokens (100 tokens = 75 words)
   const max_words =
     (MESSAGE_MAX_TOKENS / 100) * 75 - messageWithoutContentWords.length;
-
+  console.log(words.length, "nb de mots");
+  console.log(max_words, "nb max de mots authorisés");
   const groups = words.reduce<string[][]>(
     (acc, word) => {
       if (acc[acc.length - 1].length + word.length < max_words) {

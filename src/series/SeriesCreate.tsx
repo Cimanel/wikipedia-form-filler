@@ -1,13 +1,3 @@
-import {
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-} from "@mui/material";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import IconButton from "@mui/material/IconButton";
 import { useEffect, useState } from "react";
 import {
   Create,
@@ -16,8 +6,7 @@ import {
   TextInput,
   useDataProvider,
 } from "react-admin";
-import { useFormContext, useWatch } from "react-hook-form";
-import logo from "../assets/wiki-ai-white.png";
+import { useFormContext } from "react-hook-form";
 import { WikipediaAside } from "./components/WikipediaAside";
 import {
   CONTENT_STATUS,
@@ -26,6 +15,7 @@ import {
   WikipediaContext,
   useWikipediaContext,
 } from "./components/WikipediaContext";
+import { WikipediaIconInput } from "./components/WikipediaIconInput";
 
 export const SeriesCreate = () => {
   return (
@@ -96,7 +86,7 @@ const SeriesForm = () => {
 
   return (
     <>
-      <InputWithWikipediaIcon
+      <WikipediaIconInput
         disabled={disabledWikipediaIcon}
         openAiValues={openAiValues}
       >
@@ -105,97 +95,43 @@ const SeriesForm = () => {
           onChange={(e) => setTitle(e.target.value)}
           fullWidth
         />
-      </InputWithWikipediaIcon>
-      <InputWithWikipediaIcon
+      </WikipediaIconInput>
+      <WikipediaIconInput
         disabled={disabledWikipediaIcon}
         openAiValues={openAiValues}
       >
         <TextInput source="synopsis" multiline fullWidth rows={12} />
-      </InputWithWikipediaIcon>
-      <TextInput source="type" />
-      <TextInput source="genre" />
-      <TextInput source="creator" />
-      <TextInput source="director" />
-      <NumberInput source="nbSeasons" />
+      </WikipediaIconInput>
+      <WikipediaIconInput
+        disabled={disabledWikipediaIcon}
+        openAiValues={openAiValues}
+      >
+        <TextInput source="type" fullWidth />
+      </WikipediaIconInput>
+      <WikipediaIconInput
+        disabled={disabledWikipediaIcon}
+        openAiValues={openAiValues}
+      >
+        <TextInput source="genre" fullWidth />
+      </WikipediaIconInput>
+      <WikipediaIconInput
+        disabled={disabledWikipediaIcon}
+        openAiValues={openAiValues}
+      >
+        <TextInput source="creator" fullWidth />
+      </WikipediaIconInput>
+      <WikipediaIconInput
+        disabled={disabledWikipediaIcon}
+        openAiValues={openAiValues}
+      >
+        <TextInput source="director" fullWidth />
+      </WikipediaIconInput>
+      <WikipediaIconInput
+        disabled={disabledWikipediaIcon}
+        openAiValues={openAiValues}
+      >
+        <NumberInput source="nbSeasons" fullWidth />
+      </WikipediaIconInput>
     </>
   );
-};
-
-const InputWithWikipediaIcon = ({
-  children,
-  disabled,
-  openAiValues,
-}: InputWithWikipediaIconProps) => {
-  const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
-  const sourceName: string = children.props.source;
-  const uppercaseSourceName = sourceName[0].toUpperCase() + sourceName.slice(1);
-
-  const { setValue } = useFormContext();
-  const value = useWatch({ name: sourceName });
-  console.log("value", value);
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(sourceName, (event.target as HTMLInputElement).value);
-    setIsSuggestionsOpen(false);
-  };
-
-  return (
-    <Grid container spacing={1} xs={12}>
-      <Grid item xs={5}>
-        {children}
-      </Grid>
-      <Grid item xs={1}>
-        <IconButton
-          aria-label="Suggestions from Wikipedia"
-          sx={{ padding: 0 }}
-          // disabled={disabled}
-          onClick={() => setIsSuggestionsOpen(!isSuggestionsOpen)}
-        >
-          <Box
-            component="img"
-            sx={{
-              width: 40,
-              height: 40,
-              backgroundColor: disabled ? "grey" : "secondary.main",
-              borderRadius: "4px",
-              padding: "4px",
-            }}
-            src={logo}
-          />
-        </IconButton>
-      </Grid>
-      {isSuggestionsOpen && (
-        <Grid item xs={6}>
-          <FormControl>
-            <FormLabel id="demo-radio-buttons-group-label">
-              OTHER SUGGESTIONS
-            </FormLabel>
-            <RadioGroup
-              aria-labelledby="demo-radio-buttons-group-label"
-              defaultValue="female"
-              name="radio-buttons-group"
-              value={value}
-              onChange={handleChange}
-            >
-              {openAiValues[sourceName]?.map((value) => (
-                <FormControlLabel
-                  sx={{ maxWidth: 500 }}
-                  key={value}
-                  value={value}
-                  control={<Radio />}
-                  label={value}
-                />
-              ))}
-            </RadioGroup>
-          </FormControl>
-        </Grid>
-      )}
-    </Grid>
-  );
-};
-
-type InputWithWikipediaIconProps = {
-  children: JSX.Element;
-  disabled: boolean;
-  openAiValues: Record<string, string[]>;
 };
