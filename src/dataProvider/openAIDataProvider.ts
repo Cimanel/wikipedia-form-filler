@@ -16,6 +16,11 @@ const VITE_OPEN_AI_KEY = import.meta.env.VITE_OPEN_AI_KEY;
 
 const OPEN_AI_ENDPOINT = "https://api.openai.com/v1/chat/completions";
 
+const GLOBAL_INSTRUCTION =
+  "From the text below, return given string or number field values in JSON (no object as field value). Use 'null' if absent, replace if better. No extra fields.";
+const SPECIFIC_INSTRUCTION =
+  "From the text below, return 3 suggestions of values for the given field, in a JSON array (no object as field value). Use 'null' if absent, replace if better.";
+
 export const openAIDataProvider = {
   getOpenAIValuesFromContent: async (content: string, keys: [string]) => {
     const messageWithoutContent = `fields ${keys.join(",")}.text:`;
@@ -27,7 +32,7 @@ export const openAIDataProvider = {
       //fetchopenai for each group
 
       const message = `${messageWithoutContent}${group}`;
-      const data = await fetchOpenAI(message);
+      const data = await fetchOpenAI(GLOBAL_INSTRUCTION, message);
       const sanitizedData = removeNullUndefined(data);
       console.log("sanitizedData", sanitizedData);
       for (const key of Object.keys(sanitizedData)) {
@@ -41,15 +46,41 @@ export const openAIDataProvider = {
     console.log("result", result);
     return { data: result };
   },
+  getOpenAISuggestionsFromContent: async (content: string, key: string) => {
+    const messageWithoutContent = `Field ${key}. Text:`;
+    console.log("yyyyyyyyyyyyyyyyyyyy");
+    console.log(content.length, "nb de caractères");
+    /*const groups = tokenizeContent(content, messageWithoutContent);
+    let result: Record<string, string | object> = {};
+    for (const group of groups) {
+      //fetchopenai for each group
+
+      const message = `${messageWithoutContent}${group}`;*/
+    const data = await fetchOpenAI(
+      SPECIFIC_INSTRUCTION,
+      `${messageWithoutContent}${content}`
+    );
+    console.log("data", data);
+    /*const sanitizedData = removeNullUndefined(data);
+      console.log("sanitizedData", sanitizedData);
+      for (const key of Object.keys(sanitizedData)) {
+        if (!result[key]) {
+          result[key] = [sanitizedData[key]];
+        }
+      }
+    }*/
+    //console.log("result", result);
+    return data;
+  },
 };
 
-const fetchOpenAI = async (message: string) => {
+const fetchOpenAI = async (instruction: string, message: string) => {
+  console.log("message", message);
   const body = merge(DEFAULT_PARAMS, {
     messages: [
       {
         role: "system",
-        content:
-          "From the text below, return given string or number field values in JSON (no object as field value). Use 'null' if absent, replace if better. No extra fields.",
+        content: instruction,
       },
       { role: "user", content: message },
     ],
@@ -67,10 +98,13 @@ const fetchOpenAI = async (message: string) => {
     `Bearer ${VITE_OPEN_AI_KEY}`
   );
   const { json } = await fetchUtils.fetchJson(OPEN_AI_ENDPOINT, requestOptions);
-
+  console.log("json", json.choices[0]?.message?.content);
   let parsedJSON = { title: "Content not readable" };
   try {
-    parsedJSON = JSON.parse(json.choices[0]?.message?.content);
+    const sanitizedJson = json.choices[0]?.message?.content
+      .replace("```json", "")
+      .replace("```", "");
+    parsedJSON = JSON.parse(sanitizedJson);
   } catch (error) {
     console.log("error", error);
   }

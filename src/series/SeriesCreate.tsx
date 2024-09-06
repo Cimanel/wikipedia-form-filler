@@ -31,7 +31,6 @@ export const SeriesCreate = () => {
 
 const SeriesForm = () => {
   const dataProvider = useDataProvider();
-  const [disabledWikipediaIcon, setDisabledWikipediaIcon] = useState(true);
   const [openAiValues, setOpenAiValues] = useState<Record<string, string[]>>({
     title: ["totoA", "totoB", "totoC"],
     synopsis: ["synopsisA", "synopsisB", "synopsisC"],
@@ -62,7 +61,6 @@ const SeriesForm = () => {
         for (const key in data) {
           setValue(key, data[key]);
         }
-        setDisabledWikipediaIcon(false);
         setStatus(CONTENT_STATUS);
       };
       fetchData();
@@ -86,50 +84,29 @@ const SeriesForm = () => {
 
   return (
     <>
-      <WikipediaIconInput
-        disabled={disabledWikipediaIcon}
-        openAiValues={openAiValues}
-      >
+      <WikipediaIconInput>
         <TextInput
           source="title"
           onChange={(e) => setTitle(e.target.value)}
           fullWidth
         />
       </WikipediaIconInput>
-      <WikipediaIconInput
-        disabled={disabledWikipediaIcon}
-        openAiValues={openAiValues}
-      >
+      <WikipediaIconInput>
         <TextInput source="synopsis" multiline fullWidth rows={12} />
       </WikipediaIconInput>
-      <WikipediaIconInput
-        disabled={disabledWikipediaIcon}
-        openAiValues={openAiValues}
-      >
+      <WikipediaIconInput>
         <TextInput source="type" fullWidth />
       </WikipediaIconInput>
-      <WikipediaIconInput
-        disabled={disabledWikipediaIcon}
-        openAiValues={openAiValues}
-      >
+      <WikipediaIconInput>
         <TextInput source="genre" fullWidth />
       </WikipediaIconInput>
-      <WikipediaIconInput
-        disabled={disabledWikipediaIcon}
-        openAiValues={openAiValues}
-      >
+      <WikipediaIconInput>
         <TextInput source="creator" fullWidth />
       </WikipediaIconInput>
-      <WikipediaIconInput
-        disabled={disabledWikipediaIcon}
-        openAiValues={openAiValues}
-      >
+      <WikipediaIconInput>
         <TextInput source="director" fullWidth />
       </WikipediaIconInput>
-      <WikipediaIconInput
-        disabled={disabledWikipediaIcon}
-        openAiValues={openAiValues}
-      >
+      <WikipediaIconInput>
         <NumberInput source="nbSeasons" fullWidth />
       </WikipediaIconInput>
     </>

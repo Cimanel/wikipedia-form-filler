@@ -3,17 +3,19 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
-import logo from "../../assets/wiki-ai-white.png";
+import { useDataProvider } from "react-admin";
 
-export const WikipediaIconInput = ({
-  children,
-  disabled,
-  openAiValues,
-}: WikipediaIconInputProps) => {
+import logo from "../../assets/wiki-ai-white.png";
+import { useWikipediaContext } from "./WikipediaContext";
+
+export const WikipediaIconInput = ({ children }: WikipediaIconInputProps) => {
+  const dataProvider = useDataProvider();
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [isDisabled, setIsDisabled] = useState(true);
+  const { wikipediaContent } = useWikipediaContext();
   const sourceName: string = children.props.source;
 
   const { setValue } = useFormContext();
@@ -22,6 +24,28 @@ export const WikipediaIconInput = ({
   const handleChange = (value: string) => {
     setValue(sourceName, value);
     setIsSuggestionsOpen(false);
+  };
+
+  useEffect(() => {
+    setIsDisabled(!wikipediaContent);
+  }, [wikipediaContent]);
+
+  const handleWikipediaItemSearch = async () => {
+    if (!isSuggestionsOpen) {
+      if (wikipediaContent) {
+        const fetchData = async () => {
+          const data = await dataProvider.getOpenAISuggestionsFromContent(
+            wikipediaContent,
+            sourceName
+          );
+          console.log("handleWikipediaItemSearch", data);
+          setSuggestions(data);
+        };
+        fetchData();
+      }
+    }
+
+    setIsSuggestionsOpen(!isSuggestionsOpen);
   };
 
   return (
@@ -45,15 +69,15 @@ export const WikipediaIconInput = ({
           <IconButton
             aria-label="Suggestions from Wikipedia"
             sx={{ padding: 0, alignItems: "start", height: "40px" }}
-            // disabled={disabled}
-            onClick={() => setIsSuggestionsOpen(!isSuggestionsOpen)}
+            disabled={isDisabled}
+            onClick={handleWikipediaItemSearch}
           >
             <Box
               component="img"
               sx={{
                 width: 40,
                 height: 40,
-                backgroundColor: disabled ? "grey" : "secondary.main",
+                backgroundColor: isDisabled ? "grey" : "secondary.main",
                 borderRadius: "4px",
                 padding: "4px",
               }}
@@ -71,7 +95,7 @@ export const WikipediaIconInput = ({
         {isSuggestionsOpen && (
           <>
             <Grid container sx={{ pl: 2 }}>
-              {openAiValues[sourceName]?.map((value, index) => (
+              {suggestions.map((value, index) => (
                 <Grid key={index} item xs={12}>
                   <Button
                     variant="outlined"
@@ -92,6 +116,4 @@ export const WikipediaIconInput = ({
 
 type WikipediaIconInputProps = {
   children: JSX.Element;
-  disabled: boolean;
-  openAiValues: Record<string, string[]>;
 };

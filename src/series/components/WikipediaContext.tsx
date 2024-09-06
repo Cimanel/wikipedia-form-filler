@@ -19,7 +19,7 @@ export const WikipediaContext = ({ children }: WikipediaContextProps) => {
   >([]);
   const [wikipediaContent, setWikipediaContent] = useState<string>("");
   const [status, setStatus] = useState<string>("search");
-  const [title, setTitle] = useState<string>("");
+  const [title, setTitle] = useState<string>("Gladiator");
   const [backup, setBackup] = useState<Record<string, string | undefined>>({});
   const [wikiTitle, setWikiTitle] = useState<string | null>(null);
 
