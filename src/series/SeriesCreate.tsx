@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Create,
   NumberInput,
@@ -15,12 +15,13 @@ import {
   WikipediaContext,
   useWikipediaContext,
 } from "./components/WikipediaContext";
+import { WikipediaIconInput } from "./components/WikipediaIconInput";
 
 export const SeriesCreate = () => {
   return (
     <WikipediaContext>
       <Create aside={<WikipediaAside />}>
-        <SimpleForm sx={{ height: "600px" }}>
+        <SimpleForm sx={{ maxHeight: "85vh", overflowY: "scroll" }}>
           <SeriesForm />
         </SimpleForm>
       </Create>
@@ -30,6 +31,11 @@ export const SeriesCreate = () => {
 
 const SeriesForm = () => {
   const dataProvider = useDataProvider();
+  const [openAiValues, setOpenAiValues] = useState<Record<string, string[]>>({
+    title: ["totoA", "totoB", "totoC"],
+    synopsis: ["synopsisA", "synopsisB", "synopsisC"],
+  });
+
   const {
     backup,
     wikipediaContent,
@@ -50,6 +56,7 @@ const SeriesForm = () => {
           wikipediaContent,
           keys
         );
+        setOpenAiValues(data);
         setBackup(formValues);
         for (const key in data) {
           setValue(key, data[key]);
@@ -77,13 +84,31 @@ const SeriesForm = () => {
 
   return (
     <>
-      <TextInput source="title" onChange={(e) => setTitle(e.target.value)} />
-      <TextInput source="synopsis" multiline fullWidth />
-      <TextInput source="type" />
-      <TextInput source="genre" />
-      <TextInput source="creator" />
-      <TextInput source="director" />
-      <NumberInput source="nbSeasons" />
+      <WikipediaIconInput>
+        <TextInput
+          source="title"
+          onChange={(e) => setTitle(e.target.value)}
+          fullWidth
+        />
+      </WikipediaIconInput>
+      <WikipediaIconInput>
+        <TextInput source="synopsis" multiline fullWidth rows={12} />
+      </WikipediaIconInput>
+      <WikipediaIconInput>
+        <TextInput source="type" fullWidth />
+      </WikipediaIconInput>
+      <WikipediaIconInput>
+        <TextInput source="genre" fullWidth />
+      </WikipediaIconInput>
+      <WikipediaIconInput>
+        <TextInput source="creator" fullWidth />
+      </WikipediaIconInput>
+      <WikipediaIconInput>
+        <TextInput source="director" fullWidth />
+      </WikipediaIconInput>
+      <WikipediaIconInput>
+        <NumberInput source="nbSeasons" fullWidth />
+      </WikipediaIconInput>
     </>
   );
 };

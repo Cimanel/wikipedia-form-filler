@@ -20,7 +20,7 @@ export const WikipediaAside = () => {
   const { status } = useWikipediaContext();
 
   return (
-    <Card sx={{ width: 400, marginLeft: 2 }}>
+    <Card sx={{ width: 400, marginLeft: 2, maxHeight: "95vh" }}>
       <CardHeader
         avatar={
           <Box component="img" sx={{ width: 50, height: 50 }} src={logo} />

@@ -4,44 +4,83 @@ import { fetchUtils } from "react-admin";
 const DEFAULT_PARAMS = {
   model: "gpt-3.5-turbo-0125",
   temperature: 0.5,
-  max_tokens: 512,
+  max_tokens: 3000, // max = 4096
   top_p: 1,
   frequency_penalty: 0,
   presence_penalty: 0,
 };
 
-const MESSAGE_MAX_TOKENS = 16385;
+const MESSAGE_MAX_TOKENS = 16000 - DEFAULT_PARAMS.max_tokens; //max = 16385
 
 const VITE_OPEN_AI_KEY = import.meta.env.VITE_OPEN_AI_KEY;
 
 const OPEN_AI_ENDPOINT = "https://api.openai.com/v1/chat/completions";
 
+const GLOBAL_INSTRUCTION =
+  "From the text below, return given string or number field values in JSON (no object as field value). Use 'null' if absent, replace if better. No extra fields.";
+const SPECIFIC_INSTRUCTION =
+  "From the text below, return 3 suggestions of values for the given field, in a JSON array (no object as field value). Use 'null' if absent, replace if better.";
+
 export const openAIDataProvider = {
   getOpenAIValuesFromContent: async (content: string, keys: [string]) => {
     const messageWithoutContent = `fields ${keys.join(",")}.text:`;
     console.log("iiiiiiiiiiiiiiiiiii");
+    console.log(content.length, "nb de caractères");
     const groups = tokenizeContent(content, messageWithoutContent);
-    let result = {};
+    let result: Record<string, string | object> = {};
     for (const group of groups) {
       //fetchopenai for each group
 
       const message = `${messageWithoutContent}${group}`;
-      const data = await fetchOpenAI(message);
+      const data = await fetchOpenAI(GLOBAL_INSTRUCTION, message);
       const sanitizedData = removeNullUndefined(data);
       console.log("sanitizedData", sanitizedData);
-      result = { ...sanitizedData, ...result };
+      for (const key of Object.keys(sanitizedData)) {
+        if (!result[key]) {
+          result[key] = [sanitizedData[key]];
+        }
+      }
+      // TODO only select first value of array, TODO prioritize values
+      // result = { ...sanitizedData, ...result };
     }
+    console.log("result", result);
     return { data: result };
+  },
+  getOpenAISuggestionsFromContent: async (content: string, key: string) => {
+    const messageWithoutContent = `Field ${key}. Text:`;
+    console.log("yyyyyyyyyyyyyyyyyyyy");
+    console.log(content.length, "nb de caractères");
+    /*const groups = tokenizeContent(content, messageWithoutContent);
+    let result: Record<string, string | object> = {};
+    for (const group of groups) {
+      //fetchopenai for each group
+
+      const message = `${messageWithoutContent}${group}`;*/
+    const data = await fetchOpenAI(
+      SPECIFIC_INSTRUCTION,
+      `${messageWithoutContent}${content}`
+    );
+    console.log("data", data);
+    /*const sanitizedData = removeNullUndefined(data);
+      console.log("sanitizedData", sanitizedData);
+      for (const key of Object.keys(sanitizedData)) {
+        if (!result[key]) {
+          result[key] = [sanitizedData[key]];
+        }
+      }
+    }*/
+    //console.log("result", result);
+    return data;
   },
 };
 
-const fetchOpenAI = async (message: string) => {
+const fetchOpenAI = async (instruction: string, message: string) => {
+  console.log("message", message);
   const body = merge(DEFAULT_PARAMS, {
     messages: [
       {
         role: "system",
-        content:
-          "From the text below, return given string or number field values in JSON (no object as field value). Use 'null' if absent, replace if better. No extra fields.",
+        content: instruction,
       },
       { role: "user", content: message },
     ],
@@ -59,10 +98,13 @@ const fetchOpenAI = async (message: string) => {
     `Bearer ${VITE_OPEN_AI_KEY}`
   );
   const { json } = await fetchUtils.fetchJson(OPEN_AI_ENDPOINT, requestOptions);
-
+  console.log("json", json.choices[0]?.message?.content);
   let parsedJSON = { title: "Content not readable" };
   try {
-    parsedJSON = JSON.parse(json.choices[0]?.message?.content);
+    const sanitizedJson = json.choices[0]?.message?.content
+      .replace("```json", "")
+      .replace("```", "");
+    parsedJSON = JSON.parse(sanitizedJson);
   } catch (error) {
     console.log("error", error);
   }
@@ -77,8 +119,9 @@ const tokenizeContent = (content: string, messageWithoutContent: string) => {
   //crete group of words respecting 4000 tokens (100 tokens = 75 words)
   const max_words =
     (MESSAGE_MAX_TOKENS / 100) * 75 - messageWithoutContentWords.length;
-
-  const groups = words.reduce(
+  console.log(words.length, "nb de mots");
+  console.log(max_words, "nb max de mots authorisés");
+  const groups = words.reduce<string[][]>(
     (acc, word) => {
       if (acc[acc.length - 1].length + word.length < max_words) {
         acc[acc.length - 1].push(word);
@@ -94,16 +137,22 @@ const tokenizeContent = (content: string, messageWithoutContent: string) => {
   return agregatedGroups;
 };
 
-const removeNullUndefined = (obj) => {
-  return Object.entries(obj).reduce((acc, [key, value]) => {
-    if (
-      value !== null &&
-      value !== undefined &&
-      value !== "null" &&
-      value !== "undefined"
-    ) {
-      acc[key] = typeof value === "object" ? removeNullUndefined(value) : value;
-    }
-    return acc;
-  }, {});
+const removeNullUndefined = (obj: Record<string, string | object>) => {
+  return Object.entries(obj).reduce<Record<string, string | object>>(
+    (acc, [key, value]) => {
+      if (
+        value !== null &&
+        value !== undefined &&
+        value !== "null" &&
+        value !== "undefined"
+      ) {
+        acc[key] =
+          typeof value === "object"
+            ? removeNullUndefined(value as Record<string, string | object>)
+            : value;
+      }
+      return acc;
+    },
+    {}
+  );
 };

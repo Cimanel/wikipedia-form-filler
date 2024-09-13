@@ -49,6 +49,7 @@ export const WikipediaList = () => {
       }
     }
   };
+
   return (
     <Box
       aria-labelledby="alert-wikipedia-title"
